@@ -1,7 +1,9 @@
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Library where
 import PdePreludat
 import GHC.Conc (setAllocationCounter)
 import GHC.Num (Num)
+
 
 
 
@@ -37,18 +39,27 @@ type Espacio = (Number,Number,Number,Number) -- cantidad de Rojo,Azul,Verde,Negr
 generarFilas :: Number -> [Espacio]
 generarFilas cant
     |   cant ==1 = [(0,0,0,0)]
-    |   otherwise = ((0,0,0,0)) : generarFilas (cant-1)
+    |   otherwise = (0,0,0,0) : generarFilas (cant-1)
 
 inicializar :: Number -> Number -> [[Espacio]]
 inicializar filas col
     | col==1 = [generarFilas filas]
     | otherwise = generarFilas filas : inicializar filas (col -1)
 
-modificar :: [[Espacio]] -> Number->Number -> Bolita->[[Espacio]]
-modificar tablero fila col color
-    | 
+-- sumarBolita :: [[Espacio]] -> Number->Number -> Bolita->[[Espacio]]
+-- sumarBolita tablero fila col color
+--     | 
+sumarBolita :: [Espacio] -> Number-> Number -> Bolita->[Espacio]
+sumarBolita [] _ _ _ = []
+sumarBolita lista fila posicion color
+    |   posicion == length lista = [queDevuelvo lista fila posicion color]
+    |   otherwise = queDevuelvo lista fila posicion color : sumarBolita (tail lista) fila (posicion+1) color
 
 
+queDevuelvo :: [Espacio] -> Number -> Number -> Bolita ->Espacio
+queDevuelvo lista fila posicion color
+    | fila == posicion = sumar color (head lista)
+    | otherwise = head lista
 
 
 elementoN::Number -> Espacio ->Number
@@ -57,8 +68,8 @@ elementoN 2 (_,y,_,_) = y
 elementoN 3 (_,_,z,_)=z
 elementoN 4 (_,_,_,w)=w
 
-ponerBola:: Number->Number ->[[Espacio]]-> Bolita ->[[Espacio]]
-ponerBola fila col tablero bolita=  modificar tablero
+-- ponerBola:: Number->Number ->[[Espacio]]-> Bolita ->[[Espacio]]
+-- ponerBola fila col tablero bolita=  sumarBolita tablero
 
 sumar :: Bolita -> Espacio ->Espacio
 sumar Rojo (x,y,z,w) = (x+1,y,z,w)
