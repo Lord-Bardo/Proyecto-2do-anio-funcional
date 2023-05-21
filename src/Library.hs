@@ -104,11 +104,6 @@ ultimaParte lista n = drop n lista
 -- take inversa (length - fila) =[d,e,f,g] =ultimaparte
 -- init (primera parte) ++funcion (last primeraParte) ++ ultima parte
 
-elementoN::Number -> Espacio ->Number
-elementoN 1 (x,_,_,_) =x
-elementoN 2 (_,y,_,_) = y
-elementoN 3 (_,_,z,_)=z
-elementoN 4 (_,_,_,w)=w
 
 -- ponerBola:: Number->Number ->[[Espacio]]-> Bolita ->[[Espacio]]
 -- ponerBola fila col tablero bolita=  sumarBolita tablero
@@ -130,13 +125,21 @@ restar Negro (x,y,z,w)= (x,y,z,w-1)
 -- Hay bolita de un color dado: nos retorna si hay alguna bolita de cierto color en la celda actual.
 -- Cantidad de bolitas: nos retorna la cantidad de bolitas de un color dado que se encuentran en la celda actual del tablero.
 
+elementoN::Bolita ->Espacio ->Number
+elementoN Rojo (x,_,_,_) =x
+elementoN Azul (_,y,_,_) = y
+elementoN Verde (_,_,z,_)=z
+elementoN Negro (_,_,_,w)=w
 
 
+devolverEspacioPosicion :: [[Espacio]] -> Cabezal   -> Espacio
+devolverEspacioPosicion tablero (Cabezal fila columna) = (last . take fila . last . take columna)tablero
 
+hayBolita :: [[Espacio]] ->Cabezal -> Bolita -> Bool
+hayBolita tablero cabezal color =cantidadBolitas tablero cabezal color >0
 
-
-
-
+cantidadBolitas :: [[Espacio]] -> Cabezal -> Bolita -> Number
+cantidadBolitas tablero cabezal color = elementoN color (devolverEspacioPosicion tablero cabezal)
 
 
 
