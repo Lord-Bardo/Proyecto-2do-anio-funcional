@@ -28,9 +28,8 @@ moverDireccion :: Direccion -> Cabezal ->Cabezal --Hacer verificacion de que exi
 moverDireccion Norte  cabezal= Cabezal ((fila cabezal) -1) (col cabezal)
 moverDireccion Sur cabezal= Cabezal ((fila cabezal) +1) (col cabezal)
 moverDireccion Este cabezal= Cabezal (fila cabezal) ((col cabezal) +1)
-moverDireccion Oeste cabezal= Cabezal (fila cabezal) ((col cabezal) -1)
+moverDireccion Oeste cabezal= Cabezal (fila cabezal) ((col cabezal) -1) --VERIDICACION CAERSE TABLERO any
 
--- type Espacio =((Bolita, Number),(Bolita, Number),(Bolita, Number),(Bolita, Number))
 
 --(!!)((!!) tablero col) fila me devuelve una lista de tuplas
 
@@ -49,6 +48,7 @@ inicializar :: Number -> Number -> [[Espacio]]
 inicializar filas col
     | col==1 = [generarFilas filas]
     | otherwise = generarFilas filas : inicializar filas (col -1)
+
 cabezal = Cabezal 0 0
 
 
@@ -57,28 +57,52 @@ cabezal = Cabezal 0 0
 --     | 
 
 
-sumarBolita :: [Espacio] -> Number-> Number -> Bolita->[Espacio]
-sumarBolita [] _ _ _ = []
-sumarBolita lista fila posicion color
-    |   posicion == length lista = [queDevuelvo lista fila posicion color]
-    |   otherwise = queDevuelvo lista fila posicion color : sumarBolita (tail lista) fila (posicion+1) color
+-- sumarBolita :: [Espacio] -> Number-> Number -> Bolita->[Espacio] --recibe las filas
+-- sumarBolita [] _ _ _ = []
+-- sumarBolita lista fila posicion color
+--     |   posicion == length lista = [queDevuelvo lista fila posicion color]
+--     |   otherwise = queDevuelvo lista fila posicion color : sumarBolita (tail lista) fila (posicion+1) color
 
-ponerBola :: [[Espacio]] ->Cabezal->Number ->Bolita ->[[Espacio]] -- Primera posicion va  a ser 0
-ponerBola [] _ _ _= []
-ponerBola tablero cabezal posicion color
-    |   1 == length tablero = [temporal tablero (fila cabezal) (col cabezal) posicion color]
-    |   otherwise = temporal tablero (fila cabezal) (col cabezal) posicion color : ponerBola (tail tablero) cabezal (posicion +1) color
+-- queDevuelvo :: [Espacio] -> Number -> Number -> Bolita ->Espacio
+-- queDevuelvo lista fila posicion color
+--     | fila == posicion = sumar color (head lista)
+--     | otherwise = head lista
 
-temporal :: [[Espacio]]-> Number->Number ->Number->Bolita ->[Espacio] -- Ultima posicion es col-1
-temporal tablero fila col posicion color
-    |   col == posicion = sumarBolita (head tablero) fila 0 color
-    |   otherwise = head tablero
 
-queDevuelvo :: [Espacio] -> Number -> Number -> Bolita ->Espacio
-queDevuelvo lista fila posicion color
-    | fila == posicion = sumar color (head lista)
-    | otherwise = head lista
+-- ponerBola :: [[Espacio]] ->Cabezal->Number ->Bolita ->[[Espacio]] -- Primera posicion va  a ser 0
+-- ponerBola [] _ _ _= []
+-- ponerBola tablero cabezal posicion color
+--     |   1 == length tablero = [temporal tablero (fila cabezal) (col cabezal) posicion color]
+--     |   otherwise = temporal tablero (fila cabezal) (col cabezal) posicion color : ponerBola (tail tablero) cabezal (posicion +1) color
 
+-- temporal :: [[Espacio]]-> Number->Number ->Number->Bolita ->[Espacio] -- Ultima posicion es col-1
+-- temporal tablero fila col posicion color
+--     |   col == posicion = sumarBolita (head tablero) fila 0 color
+--     |   otherwise = head tablero
+
+-- Dada una lista, una función y una posición, 
+-- aplicar la función a ese elemento de la lista 
+-- y devolver la lista habiendo transformado solo ese zip [0..] [a]
+
+modificarElementoN:: [Espacio] ->Bolita-> (Bolita->Espacio->Espacio) ->Number->[Espacio]
+modificarElementoN [] _ _ _= []
+modificarElementoN lista bolita funcion fila =(init (primeraParte lista fila)) ++ (funcion bolita (last (primeraParte lista fila))  : (ultimaParte lista fila))
+
+cambiarEspacio :: [[Espacio]] ->Bolita ->(Bolita->Espacio->Espacio)->Cabezal ->[[Espacio]]
+cambiarEspacio [] _ _ _ =[]
+cambiarEspacio tablero color funcion cabezal = (init (primeraParte tablero (col cabezal))) ++ (modificarElementoN (last (primeraParte tablero (col cabezal))) color funcion (fila cabezal)   : (ultimaParte tablero (col cabezal)))
+                                                                                                                                                                            
+primeraParte:: [a] ->Number -> [a] 
+primeraParte lista n = take n lista
+
+ultimaParte :: [a]-> Number ->[a]
+ultimaParte lista n = drop n lista
+
+--(zip [0..] lista)
+--        3 [a,b,c,d,e,f,g]
+-- take fila lista =[a,b,c] =primera parte
+-- take inversa (length - fila) =[d,e,f,g] =ultimaparte
+-- init (primera parte) ++funcion (last primeraParte) ++ ultima parte
 
 elementoN::Number -> Espacio ->Number
 elementoN 1 (x,_,_,_) =x
@@ -95,8 +119,12 @@ sumar Azul (x,y,z,w) = (x,y+1,z,w)
 sumar Verde (x,y,z,w)=(x,y,z+1,w)
 sumar Negro (x,y,z,w)= (x,y,z,w+1)
 
+restar :: Bolita -> Espacio ->Espacio --Verificar que no sea 0 la cantidad de bolitas
+restar Rojo (x,y,z,w) = (x-1,y,z,w)
+restar Azul (x,y,z,w) = (x,y-1,z,w)
+restar Verde (x,y,z,w)=(x,y,z-1,w)
+restar Negro (x,y,z,w)= (x,y,z,w-1)
 
-sacarBola = implementame
 
 
 
