@@ -126,6 +126,9 @@ restar Verde (x,y,z,w)=(x,y,z-1,w)
 restar Negro (x,y,z,w)= (x,y,z,w-1)
 
 
+-- Puede moverse el cabezal: que dada una dirección y un tablero nos dice si mover el cabezal del tablero en esa dirección no provoca que este se caiga del mismo.
+-- Hay bolita de un color dado: nos retorna si hay alguna bolita de cierto color en la celda actual.
+-- Cantidad de bolitas: nos retorna la cantidad de bolitas de un color dado que se encuentran en la celda actual del tablero.
 
 
 
