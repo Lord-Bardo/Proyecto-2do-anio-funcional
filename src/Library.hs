@@ -28,8 +28,15 @@ moverDireccion :: Direccion -> Cabezal ->Cabezal --Hacer verificacion de que exi
 moverDireccion Norte  cabezal= Cabezal ((fila cabezal) -1) (col cabezal)
 moverDireccion Sur cabezal= Cabezal ((fila cabezal) +1) (col cabezal)
 moverDireccion Este cabezal= Cabezal (fila cabezal) ((col cabezal) +1)
-moverDireccion Oeste cabezal= Cabezal (fila cabezal) ((col cabezal) -1) --VERIDICACION CAERSE TABLERO any
+moverDireccion Oeste cabezal= Cabezal (fila cabezal) ((col cabezal) -1) --VERIFICACION CAERSE TABLERO any
 
+tablero = inicializar 2 4
+--sePuedemover :: [[Espacio]] -> Direccion -> Cabezal -> Bool
+--sePuedemover   tablero direccion (Cabezal fila columna)  = ((fila) + aDondeMoverFila) <= length  tablero 
+
+
+existe :: [[Espacio]] -> Direccion -> Cabezal -> Bool
+existe tablero direccion cabezal = col (moverDireccion direccion cabezal) >= 0 &&  col (moverDireccion direccion cabezal)<= length tablero && fila (moverDireccion direccion cabezal) >= 0 &&  fila (moverDireccion direccion cabezal)<= (length . head) tablero
 
 --(!!)((!!) tablero col) fila me devuelve una lista de tuplas
 
