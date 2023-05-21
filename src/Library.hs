@@ -28,8 +28,15 @@ moverDireccion :: Direccion -> Cabezal ->Cabezal --Hacer verificacion de que exi
 moverDireccion Norte  cabezal= Cabezal ((fila cabezal) -1) (col cabezal)
 moverDireccion Sur cabezal= Cabezal ((fila cabezal) +1) (col cabezal)
 moverDireccion Este cabezal= Cabezal (fila cabezal) ((col cabezal) +1)
-moverDireccion Oeste cabezal= Cabezal (fila cabezal) ((col cabezal) -1) --VERIDICACION CAERSE TABLERO any
+moverDireccion Oeste cabezal= Cabezal (fila cabezal) ((col cabezal) -1) --VERIFICACION CAERSE TABLERO any
 
+tablero = inicializar 2 4
+--sePuedemover :: [[Espacio]] -> Direccion -> Cabezal -> Bool
+--sePuedemover   tablero direccion (Cabezal fila columna)  = ((fila) + aDondeMoverFila) <= length  tablero 
+
+
+existe :: [[Espacio]] -> Direccion -> Cabezal -> Bool
+existe tablero direccion cabezal = col (moverDireccion direccion cabezal) >= 0 &&  col (moverDireccion direccion cabezal)<= length tablero && fila (moverDireccion direccion cabezal) >= 0 &&  fila (moverDireccion direccion cabezal)<= (length . head) tablero
 
 --(!!)((!!) tablero col) fila me devuelve una lista de tuplas
 
@@ -129,31 +136,3 @@ restar Negro (x,y,z,w)= (x,y,z,w-1)
 -- Puede moverse el cabezal: que dada una dirección y un tablero nos dice si mover el cabezal del tablero en esa dirección no provoca que este se caiga del mismo.
 -- Hay bolita de un color dado: nos retorna si hay alguna bolita de cierto color en la celda actual.
 -- Cantidad de bolitas: nos retorna la cantidad de bolitas de un color dado que se encuentran en la celda actual del tablero.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
