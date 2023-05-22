@@ -120,3 +120,10 @@ accion lista p = foldl(\p funcion -> funcion p) p lista
 
 
 --Ir al borde: que dada una dirección y un tablero, se mueve en esa dirección mientras pueda hacerlo.
+irAlBorde ::  Direccion -> Programa -> Programa
+irAlBorde direccion programa
+    |   existe direccion programa == False = programa
+    |   otherwise = moverDireccion direccion (irAlBorde direccion programa)
+
+existe :: Direccion -> Programa -> Bool
+existe direccion programa = (col . cabezal)  (moverDireccion direccion programa) > 0 &&  (col . cabezal) (moverDireccion direccion programa)< length (tablero programa) && (fila . cabezal) (moverDireccion direccion programa) > 0 &&  (fila . cabezal) (moverDireccion direccion programa)< (length . head) (tablero programa)
