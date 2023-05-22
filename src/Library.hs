@@ -52,17 +52,17 @@ restar = cambiarEspacio resta
 -- sentencia restar a= modificarElementoN
 -- sentencia mover a= moverDireccion a cabezal
 moverDireccion :: Direccion ->Programa -> Programa --Hacer verificacion de que existe la c-1 /c+1 etc creo que mejor tupla el cabezal
-moverDireccion Norte (Programa tablero cabezal) =Programa tablero (Cabezal ((fila cabezal) -1) (col cabezal))
-moverDireccion Sur (Programa tablero cabezal) = Programa tablero (Cabezal ((fila cabezal) +1) (col cabezal))
-moverDireccion Este (Programa tablero cabezal)  =Programa tablero (Cabezal (fila cabezal) ((col cabezal) +1))
-moverDireccion Oeste (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal) ((col cabezal) -1))
+moverDireccion Norte (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal -1) (col cabezal))
+moverDireccion Sur (Programa tablero cabezal) = Programa tablero (Cabezal (fila cabezal +1) (col cabezal))
+moverDireccion Este (Programa tablero cabezal)  =Programa tablero (Cabezal (fila cabezal) (col cabezal +1))
+moverDireccion Oeste (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal) (col cabezal -1))
 
 modificarElementoN:: [Espacio] ->Bolita-> (Bolita->Espacio->Espacio) ->Number->[Espacio]
 modificarElementoN [] _ _ _= []
-modificarElementoN lista bolita funcion fila =(init (primeraParte lista fila)) ++ (funcion bolita (last (primeraParte lista fila))  : (ultimaParte lista fila))
+modificarElementoN lista bolita funcion fila =init (primeraParte lista fila) ++ (funcion bolita (last (primeraParte lista fila))  : ultimaParte lista fila)
 
 cambiarEspacio :: (Bolita->Espacio->Espacio)-> Bolita-> Programa ->Programa
-cambiarEspacio funcion  color (Programa tablero cabezal) = Programa ((init (primeraParte tablero (col cabezal))) ++ (modificarElementoN (last (primeraParte tablero (col cabezal))) color funcion (fila cabezal)   : (ultimaParte tablero (col cabezal)))) cabezal
+cambiarEspacio funcion  color (Programa tablero cabezal) = Programa (init (primeraParte tablero (col cabezal)) ++ (modificarElementoN (last (primeraParte tablero (col cabezal))) color funcion (fila cabezal)   : ultimaParte tablero (col cabezal))) cabezal
 
 primeraParte:: [a] ->Number -> [a]
 primeraParte lista n = take n lista
@@ -77,13 +77,13 @@ ultimaParte lista n = drop n lista
 
 
 
-suma :: Bolita -> Espacio ->Espacio
+suma :: Bolita -> Espacio ->Espacio --check
 suma Rojo (x,y,z,w) = (x+1,y,z,w)
 suma Azul (x,y,z,w) = (x,y+1,z,w)
 suma Verde (x,y,z,w)=(x,y,z+1,w)
 suma Negro (x,y,z,w)= (x,y,z,w+1)
 
-resta :: Bolita -> Espacio ->Espacio --Verificar que no sea 0 la cantidad de bolitas
+resta :: Bolita -> Espacio ->Espacio --Verificar que no sea 0 la cantidad de bolitas pseudocheck
 resta Rojo (x,y,z,w) = (x-1,y,z,w)
 resta Azul (x,y,z,w) = (x,y-1,z,w)
 resta Verde (x,y,z,w)=(x,y,z-1,w)
@@ -100,10 +100,10 @@ devolverEspacioPosicion :: Programa -> Espacio
 devolverEspacioPosicion p = last (take (filaCabezal p) (last (take (colCabezal p) (tablero p))))
 
 filaCabezal :: Programa -> Number
-filaCabezal p = (fila . cabezal) p
+filaCabezal = (fila . cabezal)
 
 colCabezal :: Programa ->Number
-colCabezal p = (col . cabezal) p
+colCabezal = (col . cabezal)
 
 hayBolita :: Bolita ->Programa ->  Bool
 hayBolita color p =cantidadBolitas color p > 0
@@ -126,7 +126,7 @@ repetir lista 0 p = p
 repetir lista 1 p = accion lista p
 repetir lista r p = accion lista (repetir lista (r-1) p)
 
-accion :: [Programa->Programa]-> Programa -> Programa
+accion :: [Programa->Programa]-> Programa -> Programa --algo aca creo
 accion lista p = foldl(\p funcion -> funcion p) p lista
 
 --La sentencia alternativa: recibe una condición que se aplica sobre un tablero y dos conjuntos de sentencias
@@ -137,11 +137,11 @@ accion lista p = foldl(\p funcion -> funcion p) p lista
 
 irAlBorde ::  Direccion -> Programa -> Programa --Hay que fijarse el tema de si tomamos 1ra posicion 0 o 1
 irAlBorde direccion programa
-    |   existe direccion programa == False = programa
+    |   not (existe direccion programa) = programa
     |   otherwise =irAlBorde direccion (Programa (tablero programa) (cabezal(accion [mover direccion] programa)))
 
 existe :: Direccion -> Programa -> Bool
-existe direccion programa = (col . cabezal)  (moverDireccion direccion programa) > 0 &&  (col . cabezal) (moverDireccion direccion programa)< length (tablero programa) && (fila . cabezal) (moverDireccion direccion programa) > 0 &&  (fila . cabezal) (moverDireccion direccion programa)< (length . head) (tablero programa)
+existe direccion programa = (col . cabezal)  (moverDireccion direccion programa) > 0 &&  (col . cabezal) (moverDireccion direccion programa)<= length (tablero programa) && (fila . cabezal) (moverDireccion direccion programa) > 0 &&  (fila . cabezal) (moverDireccion direccion programa)<= (length . head) (tablero programa)
 
 
 
@@ -152,30 +152,31 @@ alternativa condicion conjunto1 conjunto2 p
 
 
 si :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
-si condicion conjunto p 
-    |   (condicion p) = accion conjunto p
+si condicion conjunto p
+    |   condicion p = accion conjunto p
     |   otherwise = p
 
 
 siNo ::(Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
-siNo condicion conjunto p = si (not . condicion) conjunto p
+siNo condicion = si (not . condicion)
 
 mientras :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
-mientras condicion conjunto p  
-    |   condicion p == False = p
-    |   otherwise = accion conjunto (mientras condicion conjunto p)
+mientras condicion conjunto programa
+    |   not (condicion programa) = programa
+    |   otherwise =mientras condicion conjunto (accion conjunto programa)
 
-conjuntoA=[mover Norte,sumar Negro,sumar Negro, sumar Azul,mover Norte, repetir [sumar Rojo, sumar Azul] 15]
+conjuntoA :: [Programa -> Programa]
+conjuntoA=[mover Sur,sumar Negro,sumar Negro, sumar Azul,mover Sur, repetir [sumar Rojo, sumar Azul] 15]
 
-conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Sur, mover Este, sumar Azul]]
+conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Norte, mover Este, sumar Azul]]
 
-conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]]
+conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]] 
 
 
 t2 = inicializar 3 3
 c2 = Cabezal 1 1
 p2 = Programa t2 c2
-punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC ++ [sumar Azul]) p2
+punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul]) p2
 
 
 
