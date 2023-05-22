@@ -26,7 +26,7 @@ data Programa = Programa {
 }deriving (Eq, Show)
 
 
-generarFilas :: Number -> [Espacio]
+generarFilas :: Number -> [Espacio] --replicate
 generarFilas cant
     |   cant ==1 = [(0,0,0,0)]
     |   otherwise = (0,0,0,0) : generarFilas (cant-1)
@@ -51,7 +51,7 @@ restar = cambiarEspacio resta
 
 -- sentencia restar a= modificarElementoN
 -- sentencia mover a= moverDireccion a cabezal
-moverDireccion :: Direccion ->Programa -> Programa --Hacer verificacion de que existe la c-1 /c+1 etc creo que mejor tupla el cabezal
+moverDireccion :: Direccion ->Programa -> Programa --podemos abstraer el cabezal
 moverDireccion Norte (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal -1) (col cabezal))
 moverDireccion Sur (Programa tablero cabezal) = Programa tablero (Cabezal (fila cabezal +1) (col cabezal))
 moverDireccion Este (Programa tablero cabezal)  =Programa tablero (Cabezal (fila cabezal) (col cabezal +1))
@@ -121,7 +121,7 @@ p= Programa t c
 conjunto1 = [mover Sur, sumar Verde,mover Este, restar Verde]
 conjunto2= [mover Norte, sumar Azul , mover Oeste, sumar Rojo]
 
-repetir:: [Programa->Programa] ->Number -> Programa -> Programa
+repetir:: [Programa->Programa] ->Number -> Programa -> Programa --replicate podemos usar
 repetir lista 0 p = p
 repetir lista 1 p = accion lista p
 repetir lista r p = accion lista (repetir lista (r-1) p)
@@ -135,7 +135,7 @@ accion lista p = foldl(\p funcion -> funcion p) p lista
 --  Si es falsa ejecuta el segundo grupo de sentencias.
 
 
-irAlBorde ::  Direccion -> Programa -> Programa --Hay que fijarse el tema de si tomamos 1ra posicion 0 o 1
+irAlBorde ::  Direccion -> Programa -> Programa --iterate otra funcion para ver
 irAlBorde direccion programa
     |   not (existe direccion programa) = programa
     |   otherwise =irAlBorde direccion (Programa (tablero programa) (cabezal(accion [mover direccion] programa)))
@@ -150,7 +150,7 @@ alternativa condicion conjunto1 conjunto2 p
     |   condicion p = accion conjunto1 p
     |   otherwise = accion conjunto2 p
 
-
+-- hacer alternativa en funcion de si, sino o alreves
 si :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
 si condicion conjunto p
     |   condicion p = accion conjunto p
@@ -160,7 +160,7 @@ si condicion conjunto p
 siNo ::(Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
 siNo condicion = si (not . condicion)
 
-mientras :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
+mientras :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa --podemos usar sino
 mientras condicion conjunto programa
     |   not (condicion programa) = programa
     |   otherwise =mientras condicion conjunto (accion conjunto programa)
