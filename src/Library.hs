@@ -139,3 +139,10 @@ alternativa condicion conjunto1 conjunto2 p
     |   otherwise = repetir conjunto2 1 p
 
 
+irAlBorde ::  Direccion -> Programa -> Programa
+irAlBorde direccion programa
+    |   existe direccion programa == False = programa
+    |   otherwise = moverDireccion direccion (irAlBorde direccion programa)
+
+existe :: Direccion -> Programa -> Bool
+existe direccion programa = (col . cabezal)  (moverDireccion direccion programa) > 0 &&  (col . cabezal) (moverDireccion direccion programa)< length (tablero programa) && (fila . cabezal) (moverDireccion direccion programa) > 0 &&  (fila . cabezal) (moverDireccion direccion programa)< (length . head) (tablero programa)
