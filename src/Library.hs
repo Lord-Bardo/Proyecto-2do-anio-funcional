@@ -5,6 +5,7 @@ import GHC.Conc (setAllocationCounter)
 import GHC.Num (Num)
 
 
+
 data Cabezal = Cabezal {
     fila:: Number,
     col :: Number
@@ -38,7 +39,7 @@ inicializar filas col
 
 
 mover :: Direccion -> Programa ->Programa
-mover = moverDireccion 
+mover = moverDireccion
 
 sumar::Bolita->Programa->Programa
 sumar = cambiarEspacio suma
@@ -51,10 +52,10 @@ restar = cambiarEspacio resta
 -- sentencia restar a= modificarElementoN
 -- sentencia mover a= moverDireccion a cabezal
 moverDireccion :: Direccion ->Programa -> Programa --Hacer verificacion de que existe la c-1 /c+1 etc creo que mejor tupla el cabezal
-moverDireccion Norte (Programa tablero cabezal) =Programa tablero (Cabezal ((fila cabezal) -1) (col cabezal)) 
-moverDireccion Sur (Programa tablero cabezal) = Programa tablero (Cabezal ((fila cabezal) +1) (col cabezal)) 
-moverDireccion Este (Programa tablero cabezal)  =Programa tablero (Cabezal (fila cabezal) ((col cabezal) +1)) 
-moverDireccion Oeste (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal) ((col cabezal) -1)) 
+moverDireccion Norte (Programa tablero cabezal) =Programa tablero (Cabezal ((fila cabezal) -1) (col cabezal))
+moverDireccion Sur (Programa tablero cabezal) = Programa tablero (Cabezal ((fila cabezal) +1) (col cabezal))
+moverDireccion Este (Programa tablero cabezal)  =Programa tablero (Cabezal (fila cabezal) ((col cabezal) +1))
+moverDireccion Oeste (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal) ((col cabezal) -1))
 
 modificarElementoN:: [Espacio] ->Bolita-> (Bolita->Espacio->Espacio) ->Number->[Espacio]
 modificarElementoN [] _ _ _= []
@@ -62,8 +63,8 @@ modificarElementoN lista bolita funcion fila =(init (primeraParte lista fila)) +
 
 cambiarEspacio :: (Bolita->Espacio->Espacio)-> Bolita-> Programa ->Programa
 cambiarEspacio funcion  color (Programa tablero cabezal) = Programa ((init (primeraParte tablero (col cabezal))) ++ (modificarElementoN (last (primeraParte tablero (col cabezal))) color funcion (fila cabezal)   : (ultimaParte tablero (col cabezal)))) cabezal
-                                                                                                                                                                            
-primeraParte:: [a] ->Number -> [a] 
+
+primeraParte:: [a] ->Number -> [a]
 primeraParte lista n = take n lista
 
 ultimaParte :: [a]-> Number ->[a]
@@ -109,12 +110,12 @@ hayBolita p color =cantidadBolitas color p > 0
 
 cantidadBolitas :: Bolita ->  Programa -> Number
 cantidadBolitas color p = elementoN color (devolverEspacioPosicion p)
- 
+
 
 -- Repetir una determinada cantidad de veces un conjunto de sentencias sobre un tablero dado
 
 c = Cabezal 1 1
-t= inicializar 3 4 
+t= inicializar 3 4
 p= Programa t c
 
 conjunto1 = [mover Sur, sumar Verde,mover Este, restar Verde]
@@ -123,17 +124,17 @@ conjunto2= [mover Norte, sumar Azul , mover Oeste, sumar Rojo]
 repetir:: [Programa->Programa] ->Number -> Programa -> Programa
 repetir lista 0 p = p
 repetir lista 1 p = accion lista p
-repetir lista r p = accion lista (repetir lista (r-1) p)  
- 
+repetir lista r p = accion lista (repetir lista (r-1) p)
+
 accion :: [Programa->Programa]-> Programa -> Programa
-accion lista p = foldl(\p funcion -> funcion p) p lista  
+accion lista p = foldl(\p funcion -> funcion p) p lista
 
 --La sentencia alternativa: recibe una condición que se aplica sobre un tablero y dos conjuntos de sentencias
 --  y un tablero. Si la condición aplicada al tablero es verdadera 
 --  ejecuta sobre el tablero el primer conjunto de sentencias.
 --  Si es falsa ejecuta el segundo grupo de sentencias.
 
-alternativa ::(Programa -> Bool)=>(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
+alternativa ::Ord (Programa -> Bool) =>(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
 alternativa condicion conjunto1 conjunto2 p
     |   condicion p = repetir conjunto1 1 p
     |   otherwise = repetir conjunto2 1 p
@@ -142,7 +143,6 @@ alternativa condicion conjunto1 conjunto2 p
 irAlBorde ::  Direccion -> Programa -> Programa
 irAlBorde direccion programa
     |   existe direccion programa == False = programa
-    |   otherwise = moverDireccion direccion (irAlBorde direccion programa)
-
+    |   otherwise =irAlBorde direccion (Programa (tablero programa) (cabezal(repetir [mover direccion] 1 programa)))
 existe :: Direccion -> Programa -> Bool
 existe direccion programa = (col . cabezal)  (moverDireccion direccion programa) > 0 &&  (col . cabezal) (moverDireccion direccion programa)< length (tablero programa) && (fila . cabezal) (moverDireccion direccion programa) > 0 &&  (fila . cabezal) (moverDireccion direccion programa)< (length . head) (tablero programa)
