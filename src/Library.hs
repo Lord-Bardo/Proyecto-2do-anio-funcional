@@ -95,20 +95,30 @@ elementoN Azul (_,y,_,_) = y
 elementoN Verde (_,_,z,_)=z
 elementoN Negro (_,_,_,w)=w
 
-devolverEspacioPosicion :: [[Espacio]] -> Cabezal   -> Espacio
-devolverEspacioPosicion tablero (Cabezal fila columna) = (last . take fila . last . take columna)tablero
+devolverEspacioPosicion :: Programa -> Espacio
+devolverEspacioPosicion p = last (take (filaCabezal p) (last (take (colCabezal p) (tablero p))))
 
-hayBolita :: [[Espacio]] ->Cabezal -> Bolita -> Bool
-hayBolita tablero cabezal color =cantidadBolitas tablero cabezal color >0
+filaCabezal :: Programa -> Number
+filaCabezal p = (fila . cabezal) p
 
-cantidadBolitas :: [[Espacio]] -> Cabezal -> Bolita -> Number
-cantidadBolitas tablero cabezal color = elementoN color (devolverEspacioPosicion tablero cabezal)
+colCabezal :: Programa ->Number
+colCabezal p = (col . cabezal) p
+
+hayBolita :: Programa -> Bolita -> Bool
+hayBolita p color =cantidadBolitas color p > 0
+
+cantidadBolitas :: Bolita ->  Programa -> Number
+cantidadBolitas color p = elementoN color (devolverEspacioPosicion p)
  
 
 -- Repetir una determinada cantidad de veces un conjunto de sentencias sobre un tablero dado
 
+c = Cabezal 1 1
+t= inicializar 3 4 
+p= Programa t c
 
-conjunto = [mover Sur, sumar Verde,mover Este, restar Verde]
+conjunto1 = [mover Sur, sumar Verde,mover Este, restar Verde]
+conjunto2= [mover Norte, sumar Azul , mover Oeste, sumar Rojo]
 
 repetir:: [Programa->Programa] ->Number -> Programa -> Programa
 repetir lista 0 p = p
@@ -118,5 +128,12 @@ repetir lista r p = accion lista (repetir lista (r-1) p)
 accion :: [Programa->Programa]-> Programa -> Programa
 accion lista p = foldl(\p funcion -> funcion p) p lista  
 
+--La sentencia alternativa: recibe una condición que se aplica sobre un tablero y dos conjuntos de sentencias
+--  y un tablero. Si la condición aplicada al tablero es verdadera 
+--  ejecuta sobre el tablero el primer conjunto de sentencias.
+--  Si es falsa ejecuta el segundo grupo de sentencias.
 
---Ir al borde: que dada una dirección y un tablero, se mueve en esa dirección mientras pueda hacerlo.
+alternativa :: Ord(Programa -> Bool)=>(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
+alternativa condicion conjunto1 conjunto2 p
+    |   condicion p = repetir conjunto1 1 p
+    |   otherwise = repetir conjunto2 1 p
