@@ -104,8 +104,8 @@ filaCabezal p = (fila . cabezal) p
 colCabezal :: Programa ->Number
 colCabezal p = (col . cabezal) p
 
-hayBolita :: Programa -> Bolita -> Bool
-hayBolita p color =cantidadBolitas color p > 0
+hayBolita :: Bolita ->Programa ->  Bool
+hayBolita color p =cantidadBolitas color p > 0
 
 cantidadBolitas :: Bolita ->  Programa -> Number
 cantidadBolitas color p = elementoN color (devolverEspacioPosicion p)
@@ -133,16 +133,48 @@ accion lista p = foldl(\p funcion -> funcion p) p lista
 --  ejecuta sobre el tablero el primer conjunto de sentencias.
 --  Si es falsa ejecuta el segundo grupo de sentencias.
 
-alternativa ::(Programa -> Bool)=>(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
-alternativa condicion conjunto1 conjunto2 p
-    |   condicion p = repetir conjunto1 1 p
-    |   otherwise = repetir conjunto2 1 p
 
-
-irAlBorde ::  Direccion -> Programa -> Programa
+irAlBorde ::  Direccion -> Programa -> Programa --Hay que fijarse el tema de si tomamos 1ra posicion 0 o 1
 irAlBorde direccion programa
     |   existe direccion programa == False = programa
-    |   otherwise = moverDireccion direccion (irAlBorde direccion programa)
+    |   otherwise =irAlBorde direccion (Programa (tablero programa) (cabezal(accion [mover direccion] programa)))
 
 existe :: Direccion -> Programa -> Bool
 existe direccion programa = (col . cabezal)  (moverDireccion direccion programa) > 0 &&  (col . cabezal) (moverDireccion direccion programa)< length (tablero programa) && (fila . cabezal) (moverDireccion direccion programa) > 0 &&  (fila . cabezal) (moverDireccion direccion programa)< (length . head) (tablero programa)
+
+
+
+alternativa ::(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
+alternativa condicion conjunto1 conjunto2 p
+    |   condicion p = accion conjunto1 p
+    |   otherwise = accion conjunto2 p
+
+
+si :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
+si condicion conjunto p 
+    |   (condicion p) = accion conjunto p
+    |   otherwise = p
+
+
+siNo ::(Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
+siNo condicion conjunto p = si (not . condicion) conjunto p
+
+mientras :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
+mientras condicion conjunto p  
+    |   condicion p == False = p
+    |   otherwise = accion conjunto (mientras condicion conjunto p)
+
+conjuntoA=[mover Norte,sumar Negro,sumar Negro, sumar Azul,mover Norte, repetir [sumar Rojo, sumar Azul] 15]
+
+conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Sur, mover Este, sumar Azul]]
+
+conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]]
+
+
+t2 = inicializar 3 3
+c2 = Cabezal 1 1
+p2 = Programa t2 c2
+punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC ++ [sumar Azul]) p2
+
+
+
