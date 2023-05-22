@@ -133,7 +133,9 @@ accion lista p = foldl(\p funcion -> funcion p) p lista
 --  ejecuta sobre el tablero el primer conjunto de sentencias.
 --  Si es falsa ejecuta el segundo grupo de sentencias.
 
-alternativa :: Ord(Programa -> Bool)=>(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
+alternativa ::(Programa -> Bool)=>(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
 alternativa condicion conjunto1 conjunto2 p
     |   condicion p = repetir conjunto1 1 p
     |   otherwise = repetir conjunto2 1 p
+
+
