@@ -27,16 +27,12 @@ data Programa = Programa {
 }deriving (Eq, Show)
 
 
-generarFilas :: Number -> [Espacio] --replicate
-generarFilas cant
-    |   cant ==1 = [(0,0,0,0)]
-    |   otherwise = (0,0,0,0) : generarFilas (cant-1)
+generarFilas :: Number ->[Espacio]
+generarFilas veces = replicate veces (0,0,0,0)
+
 
 inicializar :: Number -> Number -> [[Espacio]]
-inicializar filas col
-    | col==1 = [generarFilas filas]
-    | otherwise = generarFilas filas : inicializar filas (col -1)
-
+inicializar filas col = replicate col (generarFilas filas)
 
 
 mover :: Direccion -> Programa ->Programa
@@ -49,14 +45,15 @@ restar::Bolita->Programa->Programa
 restar = cambiarEspacio resta
 
 
+moverDireccion :: Direccion ->Programa -> Programa 
+moverDireccion direccion (Programa tablero cabezal) =Programa tablero (dndeQuedo direccion cabezal)
 
--- sentencia restar a= modificarElementoN
--- sentencia mover a= moverDireccion a cabezal
-moverDireccion :: Direccion ->Programa -> Programa --podemos abstraer el cabezal
-moverDireccion Norte (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal -1) (col cabezal))
-moverDireccion Sur (Programa tablero cabezal) = Programa tablero (Cabezal (fila cabezal +1) (col cabezal))
-moverDireccion Este (Programa tablero cabezal)  =Programa tablero (Cabezal (fila cabezal) (col cabezal +1))
-moverDireccion Oeste (Programa tablero cabezal) =Programa tablero (Cabezal (fila cabezal) (col cabezal -1))
+dndeQuedo :: Direccion -> Cabezal ->Cabezal 
+dndeQuedo Norte (Cabezal fila col) =Cabezal (fila-1) col
+dndeQuedo Sur (Cabezal fila col) =Cabezal (fila +1) col 
+dndeQuedo Este (Cabezal fila col)  =Cabezal fila (col+1)
+dndeQuedo Oeste (Cabezal fila col) = Cabezal fila (col-1)
+
 
 modificarElementoN:: [Espacio] ->Bolita-> (Bolita->Espacio->Espacio) ->Number->[Espacio]
 modificarElementoN [] _ _ _= []
@@ -76,6 +73,11 @@ suma Rojo (x,y,z,w) = (x+1,y,z,w)
 suma Azul (x,y,z,w) = (x,y+1,z,w)
 suma Verde (x,y,z,w)=(x,y,z+1,w)
 suma Negro (x,y,z,w)= (x,y,z,w+1)
+
+-- antesDeResta :: Bolita -> Espacio ->Espacio
+-- antesDeResta color p 
+--     |   hayBolita color p = resta color (tablero p) 
+--     |   otherwise = tablero p
 
 resta :: Bolita -> Espacio ->Espacio --Verificar que no sea 0 la cantidad de bolitas pseudocheck
 resta Rojo (x,y,z,w) = (x-1,y,z,w)
