@@ -6,6 +6,7 @@ import GHC.Num (Num)
 
 
 
+
 data Cabezal = Cabezal {
     fila:: Number,
     col :: Number
@@ -70,13 +71,6 @@ primeraParte lista n = take n lista
 ultimaParte :: [a]-> Number ->[a]
 ultimaParte lista n = drop n lista
 
-
--- existe :: [[Espacio]] -> Direccion -> Cabezal -> Bool
--- existe tablero direccion cabezal = col (moverDireccion direccion cabezal) >= 0 &&  col (moverDireccion direccion cabezal)<= length tablero && fila (moverDireccion direccion cabezal) >= 0 &&  fila (moverDireccion direccion cabezal)<= (length . head) tablero
-
-
-
-
 suma :: Bolita -> Espacio ->Espacio --check
 suma Rojo (x,y,z,w) = (x+1,y,z,w)
 suma Azul (x,y,z,w) = (x,y+1,z,w)
@@ -100,10 +94,10 @@ devolverEspacioPosicion :: Programa -> Espacio
 devolverEspacioPosicion p = last (take (filaCabezal p) (last (take (colCabezal p) (tablero p))))
 
 filaCabezal :: Programa -> Number
-filaCabezal = (fila . cabezal)
+filaCabezal = fila . cabezal
 
 colCabezal :: Programa ->Number
-colCabezal = (col . cabezal)
+colCabezal = col . cabezal
 
 hayBolita :: Bolita ->Programa ->  Bool
 hayBolita color p =cantidadBolitas color p > 0
@@ -111,39 +105,30 @@ hayBolita color p =cantidadBolitas color p > 0
 cantidadBolitas :: Bolita ->  Programa -> Number
 cantidadBolitas color p = elementoN color (devolverEspacioPosicion p)
 
-
 -- Repetir una determinada cantidad de veces un conjunto de sentencias sobre un tablero dado
 
-c = Cabezal 1 1
-t= inicializar 3 4
-p= Programa t c
 
 conjunto1 = [mover Sur, sumar Verde,mover Este, restar Verde]
 conjunto2= [mover Norte, sumar Azul , mover Oeste, sumar Rojo]
 
 repetir:: [Programa->Programa] ->Number -> Programa -> Programa --replicate podemos usar
 repetir lista 0 p = p
-repetir lista 1 p = accion lista p
 repetir lista r p = accion lista (repetir lista (r-1) p)
 
 accion :: [Programa->Programa]-> Programa -> Programa --algo aca creo
 accion lista p = foldl(\p funcion -> funcion p) p lista
 
---La sentencia alternativa: recibe una condición que se aplica sobre un tablero y dos conjuntos de sentencias
---  y un tablero. Si la condición aplicada al tablero es verdadera 
---  ejecuta sobre el tablero el primer conjunto de sentencias.
---  Si es falsa ejecuta el segundo grupo de sentencias.
 
 
-irAlBorde ::  Direccion -> Programa -> Programa --iterate otra funcion para ver
-irAlBorde direccion programa
-    |   not (existe direccion programa) = programa
-    |   otherwise =irAlBorde direccion (Programa (tablero programa) (cabezal(accion [mover direccion] programa)))
+irAlBorde :: (Direccion -> Programa -> Programa) -> Direccion -> Programa -> Programa
+irAlBorde funcion direccion programa = (last . take (cuantoMeMuevo direccion programa) . iterate (funcion direccion)) programa
 
-existe :: Direccion -> Programa -> Bool
-existe direccion programa = (col . cabezal)  (moverDireccion direccion programa) > 0 &&  (col . cabezal) (moverDireccion direccion programa)<= length (tablero programa) && (fila . cabezal) (moverDireccion direccion programa) > 0 &&  (fila . cabezal) (moverDireccion direccion programa)<= (length . head) (tablero programa)
-
-
+cuantoMeMuevo:: Direccion -> Programa -> Number
+cuantoMeMuevo  Norte programa = (fila . cabezal) programa
+cuantoMeMuevo  Sur programa = (length . head . tablero) programa- (fila.cabezal)programa + 1
+cuantoMeMuevo  Oeste programa = (col.cabezal)programa 
+cuantoMeMuevo  Este programa =   (length .tablero) programa - (col.cabezal)programa + 1
+                  
 
 alternativa ::(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
 alternativa condicion conjunto1 conjunto2 p
@@ -170,13 +155,13 @@ conjuntoA=[mover Sur,sumar Negro,sumar Negro, sumar Azul,mover Sur, repetir [sum
 
 conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Norte, mover Este, sumar Azul]]
 
-conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]] 
+conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]]
 
 
-t2 = inicializar 3 3
-c2 = Cabezal 1 1
-p2 = Programa t2 c2
-punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul]) p2
+tablero2 = inicializar 5 5
+cabezal2 = Cabezal 3 3
+programa2 = Programa tablero2 cabezal2
+punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul]) programa2
 
 
 
