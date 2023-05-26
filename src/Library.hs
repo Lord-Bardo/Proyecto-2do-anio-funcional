@@ -26,14 +26,11 @@ data Programa = Programa {
     cabezal:: Cabezal
 }deriving (Eq, Show)
 
-
 generarFilas :: Number ->[Espacio]
 generarFilas veces = replicate veces (0,0,0,0)
 
-
 inicializar :: Number -> Number -> [[Espacio]]
 inicializar filas col = replicate col (generarFilas filas)
-
 
 mover :: Direccion -> Programa ->Programa
 mover = moverDireccion
@@ -44,7 +41,6 @@ sumar = cambiarEspacio suma
 restar::Bolita->Programa->Programa
 restar = cambiarEspacio restara
 
-
 moverDireccion :: Direccion ->Programa -> Programa 
 moverDireccion direccion (Programa tablero cabezal) =Programa tablero (dndeQuedo direccion cabezal)
 
@@ -53,7 +49,6 @@ dndeQuedo Norte (Cabezal fila col) =Cabezal (fila-1) col
 dndeQuedo Sur (Cabezal fila col) =Cabezal (fila +1) col 
 dndeQuedo Este (Cabezal fila col)  =Cabezal fila (col+1)
 dndeQuedo Oeste (Cabezal fila col) = Cabezal fila (col-1)
-
 
 modificarElementoN:: [Espacio] ->Bolita-> (Bolita->Espacio->Espacio) ->Number->[Espacio]
 modificarElementoN [] _ _ _= []
@@ -73,11 +68,6 @@ suma Rojo (x,y,z,w) = (x+1,y,z,w)
 suma Azul (x,y,z,w) = (x,y+1,z,w)
 suma Verde (x,y,z,w)=(x,y,z+1,w)
 suma Negro (x,y,z,w)= (x,y,z,w+1)
-
---antesDeResta :: Bolita -> Programa ->Espacio
---antesDeResta color p
---    |   hayBolita color p = resta color (tablero p) 
---    |   otherwise = tablero p
 
 resta :: Bolita -> Espacio ->Espacio --Verificar que no sea 0 la cantidad de bolitas pseudocheck
 resta Rojo (x,y,z,w) = (x-1,y,z,w)
@@ -112,7 +102,6 @@ cantidadBolitas color p = elementoN color (devolverEspacioPosicion p)
 
 -- Repetir una determinada cantidad de veces un conjunto de sentencias sobre un tablero dado
 
-
 conjunto1 = [mover Sur, sumar Verde,mover Este, restar Verde]
 conjunto2= [mover Norte, sumar Azul , mover Oeste, sumar Rojo]
 
@@ -123,8 +112,6 @@ repetir lista r p = accion lista (repetir lista (r-1) p)
 accion :: [Programa->Programa]-> Programa -> Programa --algo aca creo
 accion lista p = foldl(\p funcion -> funcion p) p lista
 
-
-
 irAlBorde :: (Direccion -> Programa -> Programa) -> Direccion -> Programa -> Programa
 irAlBorde funcion direccion programa = (last . take (cuantoMeMuevo direccion programa) . iterate (funcion direccion)) programa
 
@@ -134,8 +121,6 @@ cuantoMeMuevo  Sur programa = (length . head . tablero) programa- (fila.cabezal)
 cuantoMeMuevo  Oeste programa = (col.cabezal)programa 
 cuantoMeMuevo  Este programa =   (length .tablero) programa - (col.cabezal)programa + 1
                   
-
-
 alternativa :: (Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
 alternativa condicion conjunto1 conjunto2 p = siNo condicion conjunto2 (si condicion conjunto1 p)
 
@@ -143,7 +128,6 @@ si :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
 si condicion conjunto p
     |   condicion p = accion conjunto p
     |   otherwise = p
-
 
 siNo ::(Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
 siNo condicion = si (not . condicion)
@@ -160,11 +144,7 @@ conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Sur, 
 
 conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]]
 
-
 tablero2 = inicializar 3 3
 cabezal2 = Cabezal 1 1
 programa2 = Programa tablero2 cabezal2
 punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul]) programa2
-
-
-
