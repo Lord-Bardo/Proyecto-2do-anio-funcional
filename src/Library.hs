@@ -145,6 +145,7 @@ conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Sur, 
 conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]]
 
 tablero2 = inicializar 3 3
-cabezal2 = Cabezal 1 1
+cabezal2 = Cabezal 3 1
 programa2 = Programa tablero2 cabezal2
-punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul]) programa2
+punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul] ) programa2
+-- 
