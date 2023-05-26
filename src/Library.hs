@@ -132,12 +132,10 @@ cuantoMeMuevo  Oeste programa = (col.cabezal)programa
 cuantoMeMuevo  Este programa =   (length .tablero) programa - (col.cabezal)programa + 1
                   
 
-alternativa ::(Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
-alternativa condicion conjunto1 conjunto2 p
-    |   condicion p = accion conjunto1 p
-    |   otherwise = accion conjunto2 p
 
--- hacer alternativa en funcion de si, sino o alreves
+alternativa :: (Programa -> Bool) ->[Programa->Programa] -> [Programa->Programa] -> Programa -> Programa
+alternativa condicion conjunto1 conjunto2 p = siNo condicion conjunto2 (si condicion conjunto1 p)
+
 si :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
 si condicion conjunto p
     |   condicion p = accion conjunto p
@@ -147,21 +145,21 @@ si condicion conjunto p
 siNo ::(Programa->Bool) -> [Programa->Programa] ->Programa ->Programa
 siNo condicion = si (not . condicion)
 
-mientras :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa --podemos usar sino
+mientras :: (Programa->Bool) -> [Programa->Programa] ->Programa ->Programa 
 mientras condicion conjunto programa
     |   not (condicion programa) = programa
     |   otherwise =mientras condicion conjunto (accion conjunto programa)
 
 conjuntoA :: [Programa -> Programa]
-conjuntoA=[mover Sur,sumar Negro,sumar Negro, sumar Azul,mover Sur, repetir [sumar Rojo, sumar Azul] 15]
+conjuntoA=[mover Norte,sumar Negro,sumar Negro, sumar Azul,mover Norte, repetir [sumar Rojo, sumar Azul] 15]
 
-conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Norte, mover Este, sumar Azul]]
+conjuntoB= [alternativa (hayBolita Verde) [mover Este, sumar Negro] [mover Sur, mover Este, sumar Azul]]
 
 conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]]
 
 
-tablero2 = inicializar 5 5
-cabezal2 = Cabezal 3 3
+tablero2 = inicializar 3 3
+cabezal2 = Cabezal 3 1
 programa2 = Programa tablero2 cabezal2
 punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul]) programa2
 
