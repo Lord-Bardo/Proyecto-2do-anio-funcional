@@ -74,17 +74,20 @@ suma Azul (x,y,z,w) = (x,y+1,z,w)
 suma Verde (x,y,z,w)=(x,y,z+1,w)
 suma Negro (x,y,z,w)= (x,y,z,w+1)
 
--- antesDeResta :: Bolita -> Espacio ->Espacio
--- antesDeResta color p 
---     |   hayBolita color p = resta color (tablero p) 
---     |   otherwise = tablero p
+--antesDeResta :: Bolita -> Programa ->Espacio
+--antesDeResta color p
+--    |   hayBolita color p = resta color (tablero p) 
+--    |   otherwise = tablero p
 
 resta :: Bolita -> Espacio ->Espacio --Verificar que no sea 0 la cantidad de bolitas pseudocheck
 resta Rojo (x,y,z,w) = (x-1,y,z,w)
 resta Azul (x,y,z,w) = (x,y-1,z,w)
 resta Verde (x,y,z,w)=(x,y,z-1,w)
 resta Negro (x,y,z,w)= (x,y,z,w-1)
-
+restara :: Bolita -> Espacio -> Espacio
+restara color (x,y,z,w)
+    | elementoN color (x,y,z,w) > 0 = resta color (x,y,z,w)
+    | otherwise = (x,y,z,w)
 
 elementoN::Bolita ->Espacio ->Number
 elementoN Rojo (x,_,_,_) =x
@@ -159,7 +162,7 @@ conjuntoC= [mientras ((<=9) . cantidadBolitas Verde) [sumar Verde]]
 
 
 tablero2 = inicializar 3 3
-cabezal2 = Cabezal 3 1
+cabezal2 = Cabezal 1 1
 programa2 = Programa tablero2 cabezal2
 punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul]) programa2
 
