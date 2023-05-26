@@ -42,7 +42,7 @@ sumar::Bolita->Programa->Programa
 sumar = cambiarEspacio suma
 
 restar::Bolita->Programa->Programa
-restar = cambiarEspacio resta
+restar = cambiarEspacio restara
 
 
 moverDireccion :: Direccion ->Programa -> Programa 
