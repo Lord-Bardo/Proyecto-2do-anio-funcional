@@ -148,4 +148,9 @@ tablero2 = inicializar 3 3
 cabezal2 = Cabezal 3 1
 programa2 = Programa tablero2 cabezal2
 punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul] ) programa2
--- 
+
+tableroTest = inicializar 2 2
+cabezalTest = Cabezal 2 1
+programaTest = Programa tableroTest cabezalTest  
+tableroTest2 =  [[(0,0,0,0),(1,1,1,1)],[(0,0,0,0),(0,0,0,0)]]
+programaTest2 = Programa tableroTest2 cabezalTest
