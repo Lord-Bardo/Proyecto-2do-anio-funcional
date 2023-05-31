@@ -32,6 +32,10 @@ generarFilas veces = replicate veces (0,0,0,0)
 inicializar :: Number -> Number -> [[Espacio]]
 inicializar filas col = replicate col (generarFilas filas)
 
+punto2 :: Number -> Number ->Programa --Nuestro 3 1 es el 1 1
+punto2 fila columna = Programa (inicializar fila columna) (Cabezal 3 1)
+
+
 mover :: Direccion -> Programa ->Programa
 mover = moverDireccion
 
