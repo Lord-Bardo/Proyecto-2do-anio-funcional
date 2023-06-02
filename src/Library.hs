@@ -48,6 +48,17 @@ restar = cambiarEspacio restara
 moverDireccion :: Direccion ->Programa -> Programa 
 moverDireccion direccion (Programa tablero cabezal) =Programa tablero (dndeQuedo direccion cabezal)
 
+noSeCae :: Direccion -> Programa -> Bool
+noSeCae Norte programa = (fila . dndeQuedo Norte . cabezal) programa > 0 
+noSeCae Sur programa = (fila  . dndeQuedo Sur . cabezal) programa < (length . head . tablero) programa
+noSeCae Oeste programa = (col . dndeQuedo Oeste . cabezal) programa > 0
+noSeCae Este programa = (col . dndeQuedo Este . cabezal) programa  < (length . tablero) programa
+
+seMovera :: Direccion -> Programa -> Programa
+seMovera direccion programa 
+    |   noSeCae direccion programa = moverDireccion direccion programa 
+    |   otherwise = error "Se cae del tablero"
+
 dndeQuedo :: Direccion -> Cabezal ->Cabezal 
 dndeQuedo Norte (Cabezal fila col) =Cabezal (fila-1) col
 dndeQuedo Sur (Cabezal fila col) =Cabezal (fila +1) col 
@@ -154,7 +165,7 @@ programa2 = Programa tablero2 cabezal2
 punto7 = accion (conjuntoA ++ conjuntoB ++ [mover Este] ++ conjuntoC++ [sumar Azul] ) programa2
 
 tableroTest = inicializar 2 2
-cabezalTest = Cabezal 2 1
+cabezalTest = Cabezal  2 1
 programaTest = Programa tableroTest cabezalTest  
 tableroTest2 =  [[(0,0,0,0),(1,1,1,1)],[(0,0,0,0),(0,0,0,0)]]
 programaTest2 = Programa tableroTest2 cabezalTest
